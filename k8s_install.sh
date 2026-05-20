@@ -1,22 +1,26 @@
+# https://kubernetes.io/ko/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+
 #root 권한으로 실행되지 않으면 빠꾸먹이기
 if [ "$EUID" -ne 0 ]; then
   echo "Please run as root"
   exit
 fi
 
+#버전
+KUBE_VERSION="v1.36"
+
 # 스왑 영구 비활성화
 systemctl disable --now swap.target
 
 apt update
-apt install -y apt-transport-https ca-certificates curl
-apt install -y apt-transport-https
+apt install -y apt-transport-https ca-certificates curl gpg
 
 # 공개키 다운로드 및 저장
-curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+mkdir -p /etc/apt/keyrings
+curl -fsSL https://pkgs.k8s.io/core:/stable:/$KUBE_VERSION/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
 # 레포지토리 추가
-echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list
-
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.36/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 apt update
 apt install -y kubectl kubelet kubeadm
 
@@ -27,3 +31,6 @@ apt-mark hold kubectl kubelet kubeadm
 # apt-mark unhold kubelet kubeadm kubectl
 # apt update
 # apt upgrade -y kubelet kubeadm kubectl
+
+# kubelet 서비스 활성화
+systemctl enable --now kubelet
