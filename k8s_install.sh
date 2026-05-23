@@ -17,10 +17,10 @@ apt install -y apt-transport-https ca-certificates curl gpg
 
 # 공개키 다운로드 및 저장
 mkdir -p /etc/apt/keyrings
-curl -fsSL https://pkgs.k8s.io/core:/stable:/$KUBE_VERSION/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+curl -fsSL "https://pkgs.k8s.io/core:/stable:/${KUBE_VERSION}/deb/Release.key" \ | gpg --dearmor --yes -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
 # 레포지토리 추가
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/$KUBE_VERSION/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/$KUBE_VERSION/deb/ /" \ | tee /etc/apt/sources.list.d/kubernetes.list
 apt update
 apt install -y kubectl kubelet kubeadm
 
@@ -31,6 +31,3 @@ apt-mark hold kubectl kubelet kubeadm
 # apt-mark unhold kubelet kubeadm kubectl
 # apt update
 # apt upgrade -y kubelet kubeadm kubectl
-
-# kubelet 서비스 활성화
-systemctl enable --now kubelet
