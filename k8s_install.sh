@@ -11,6 +11,7 @@ KUBE_VERSION="v1.36"
 
 # 스왑 영구 비활성화
 systemctl disable --now swap.target
+swapoff -a && sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
 apt update
 apt install -y apt-transport-https ca-certificates curl gpg
